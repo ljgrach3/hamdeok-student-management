@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client'; // Student, Demerit, Warning, Expulsion 제거
+import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Demerit, Warning, Expulsion } from '@prisma/client'; // Ensure these are imported if used in types
 
 const prisma = new PrismaClient();
 
@@ -21,11 +22,19 @@ async function getStudentDetails(studentId: string) {
   }
 }
 
-export default async function StudentDetailPage({ params }: { params: { id: string } }) {
+// Explicitly define the expected props structure for a dynamic route page
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined }; // searchParams 추가
+}
+
+export default async function StudentDetailPage({ params }: PageProps) { // PageProps 사용
   const student = await getStudentDetails(params.id);
 
   if (!student) {
-    notFound(); // 학생을 찾을 수 없으면 404 페이지 표시
+    notFound();
   }
 
   return (
