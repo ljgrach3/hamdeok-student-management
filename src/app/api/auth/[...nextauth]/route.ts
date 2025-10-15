@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import type { JWT } from 'next-auth/jwt'; // JWT 타입 임포트
 
 const prisma = new PrismaClient();
 
@@ -46,7 +47,7 @@ const authOptions = { // authOptions 객체를 export 합니다.
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT, user: any }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
