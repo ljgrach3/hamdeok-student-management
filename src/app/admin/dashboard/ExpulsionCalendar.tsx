@@ -17,7 +17,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1 }), // 주 시작을 월요일로 설정
+  startOfWeek: (date: Date) => startOfWeek(date, { weekStartsOn: 1 }), // 주 시작을 월요일로 설정
   getDay,
   locales,
 });
