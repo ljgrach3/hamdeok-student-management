@@ -22,15 +22,15 @@ async function getStudentDetails(studentId: string) {
   }
 }
 
-// Explicitly define the expected props structure for a dynamic route page
-interface PageProps {
-  params: {
-    id: string;
-  };
-  // searchParams?: { [key: string]: string | string[] | undefined }; // searchParams 제거
-}
+// PageProps 인터페이스 제거
+// interface PageProps {
+//   params: {
+//     id: string;
+//   };
+//   searchParams?: { [key: string]: string | string[] | undefined };
+// }
 
-export default async function StudentDetailPage({ params }: PageProps) { // PageProps 사용
+export default async function StudentDetailPage({ params }: { params: { id: string } }) { // props를 인라인으로 정의
   const student = await getStudentDetails(params.id);
 
   if (!student) {
