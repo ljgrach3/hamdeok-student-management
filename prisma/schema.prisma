@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// 학생 모델
+model Student {
+  id        String   @id @default(cuid())
+  grade     Int // 학년
+  classNum  Int // 반
+  name      String // 이름
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  demerits   Demerit[]
+  warnings   Warning[]
+  expulsions Expulsion[]
+
+  @@unique([grade, classNum, name], name: "unique_student")
+}
+
+// 관리자 모델
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String // 비밀번호 해시를 저장합니다.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 벌점 기록 모델
+model Demerit {
+  id        String   @id @default(cuid())
+  points    Int // 벌점 수치
+  reason    String // 벌점 사유
+  assigner  String // 벌점 부여자 (관리자 이름)
+  date      DateTime @default(now()) // 벌점 부여 일시
+  
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// 경고 기록 모델
+model Warning {
+  id        String   @id @default(cuid())
+  reason    String // 경고 사유
+  date      DateTime @default(now()) // 경고 부여 일시
+
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// 퇴출 기록 모델
+model Expulsion {
+  id        String   @id @default(cuid())
+  startDate DateTime // 퇴출 시작일
+  endDate   DateTime // 퇴출 종료일
+  totalDays Int // 총 퇴출일
+  status    String // 상태: PENDING (예정), ACTIVE (진행중), COMPLETED (완료)
+  
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
