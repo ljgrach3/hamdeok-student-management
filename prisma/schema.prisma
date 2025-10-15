@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql" // sqlite -> postgresql
+  url      = env("DATABASE_URL") // file:./dev.db -> env("DATABASE_URL")
 }
 
 // 학생 모델
@@ -26,14 +26,58 @@ model Student {
   @@unique([grade, classNum, name], name: "unique_student")
 }
 
-// 관리자 모델
-model Admin {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String // 비밀번호 해시를 저장합니다.
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// next-auth User 모델로 사용될 Admin 모델 (이름을 User로 변경)
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String // 암호화된 비밀번호 저장
+  email         String?   @unique // next-auth User 모델에 필요 (선택 사항이지만 추가)
+  emailVerified DateTime? // next-auth User 모델에 필요
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
 }
+
+// next-auth Account 모델
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// next-auth Session 모델
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// next-auth VerificationToken 모델
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 
 // 벌점 기록 모델
 model Demerit {

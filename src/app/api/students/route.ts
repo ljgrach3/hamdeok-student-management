@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'; // PrismaClientKnownRequestError import
 
 const prisma = new PrismaClient();
 
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating student:', error);
     // Prisma unique constraint violation
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2002') {
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') { // any 대신 PrismaClientKnownRequestError 사용
         return NextResponse.json({ error: '이미 등록된 학생입니다.' }, { status: 409 });
     }
     return NextResponse.json({ error: '학생을 추가하는 중 오류가 발생했습니다.' }, { status: 500 });
