@@ -14,10 +14,10 @@ export default function DemeritPage() {
   const [selectedStudent, setSelectedStudent] = useState('');
   const [points, setPoints] = useState('');
   const [reason, setReason] = useState('');
-  const [assigner, setAssigner] = useState('admin'); // 임시로 'admin' 사용
+  const assigner = 'admin'; // setAssigner 제거
   
   const [message, setMessage] = useState<{ type: 'success' | 'error'; content: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 폼 제출 로딩 상태
 
   // 모든 학생 목록 불러오기 (드롭다운용)
   useEffect(() => {
@@ -36,10 +36,17 @@ export default function DemeritPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMessage(null);
-    setIsLoading(true);
+    setIsLoading(true); // 로딩 시작
 
     if (!selectedStudent || !points || !reason) {
       setMessage({ type: 'error', content: '모든 필드를 입력해주세요.' });
+      setIsLoading(false);
+      return;
+    }
+
+    // 확인 팝업 추가
+    const studentName = students.find(s => s.id === selectedStudent)?.name || '선택된 학생';
+    if (!window.confirm(`${studentName} 학생에게 벌점 ${points}점을 부여하시겠습니까? 사유: ${reason}`)) {
       setIsLoading(false);
       return;
     }
@@ -70,12 +77,13 @@ export default function DemeritPage() {
     } catch (err) {
       setMessage({ type: 'error', content: err instanceof Error ? err.message : '알 수 없는 오류 발생' });
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   return (
     <div className="container mx-auto p-4 md:p-8">
+      <h2 className="text-xl md:text-2xl font-semibold mb-4">벌점 부여</h2>
       <div className="w-full max-w-lg mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -86,6 +94,7 @@ export default function DemeritPage() {
               onChange={(e) => setSelectedStudent(e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
+              disabled={isLoading} // 로딩 중 비활성화
             >
               <option value="">학생을 선택하세요</option>
               {students.map(student => (
@@ -105,6 +114,7 @@ export default function DemeritPage() {
               className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="벌점을 숫자로 입력"
               required
+              disabled={isLoading} // 로딩 중 비활성화
             />
           </div>
           <div>
@@ -117,17 +127,18 @@ export default function DemeritPage() {
               className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="벌점 사유를 구체적으로 입력"
               required
+              disabled={isLoading} // 로딩 중 비활성화
             />
           </div>
           {message && (
-            <p className={`text-sm ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+            <p className={`mt-2 text-sm ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
               {message.content}
             </p>
           )}
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading} // 로딩 중 비활성화
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
             >
               {isLoading ? '부여 중...' : '벌점 부여'}

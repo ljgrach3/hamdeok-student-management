@@ -1,4 +1,4 @@
-import { PrismaClient, Student, Demerit, Warning, Expulsion } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'; // Student, Demerit, Warning, Expulsion 제거
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
