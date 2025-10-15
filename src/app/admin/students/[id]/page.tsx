@@ -27,7 +27,7 @@ interface PageProps {
   params: {
     id: string;
   };
-  searchParams?: { [key: string]: string | string[] | undefined }; // searchParams 추가
+  // searchParams?: { [key: string]: string | string[] | undefined }; // searchParams 제거
 }
 
 export default async function StudentDetailPage({ params }: PageProps) { // PageProps 사용
