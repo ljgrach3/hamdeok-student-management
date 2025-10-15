@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Student, Demerit, Warning, Expulsion } from '@prisma/client';
+import { notFound } from 'next/navigation';
 import StudentCalendar from './StudentCalendar'; // 학생 달력 컴포넌트 import
 
 const prisma = new PrismaClient();
 
 async function getStudentData(studentId: string) {
-  // ... (데이터 가져오는 로직은 이전과 동일)
   try {
     const student = await prisma.student.findUnique({
       where: { id: studentId },
@@ -25,21 +25,17 @@ export default async function StudentDashboardPage({ params }: { params: { id: s
   const student = await getStudentData(params.id);
 
   if (!student) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold">학생 정보를 찾을 수 없습니다.</h1>
-      </main>
-    );
+    notFound();
   }
 
-  // ... (벌점 및 퇴출 상태 계산 로직은 이전과 동일)
   const today = new Date();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const currentMonthDemerits = student.demerits.filter(d => new Date(d.date) >= startOfMonth);
   const totalPoints = currentMonthDemerits.reduce((sum, d) => sum + d.points, 0);
   const activeExpulsion = student.expulsions.find(e => e.status === 'ACTIVE' || e.status === 'PENDING');
 
-  function getExpulsionStatus(totalPoints: number, activeExpulsion: any) {
+  // activeExpulsion 타입을 명확히 지정
+  function getExpulsionStatus(totalPoints: number, activeExpulsion: (Expulsion | undefined)) {
     if (activeExpulsion) {
         if (activeExpulsion.status === 'PENDING') return { text: '퇴출 예정', color: 'text-yellow-500' };
         if (activeExpulsion.status === 'ACTIVE') return { text: '퇴출 진행중', color: 'text-red-600' };

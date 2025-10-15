@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export async function GET() { // request 매개변수 제거
   // 참고: 실제 서비스에서는 Vercel 환경 변수에 CRON_SECRET을 설정하고,
-  // 아래 주석 처리된 코드를 활성화하여 허가되지 않은 접근을 막아야 합니다.
+  // 아래 주석 처리된 코드를 활성화하여 허가되지 않은 접근을 막아야 합니다。
   /*
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

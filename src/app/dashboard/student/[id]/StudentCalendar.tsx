@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, dateFnsLocalizer, EventProps } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, SlotInfo } from 'react-big-calendar'; // EventProps 제거
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';

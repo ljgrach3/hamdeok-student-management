@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Student } from '@prisma/client'; // Student 타입 import
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -32,7 +32,7 @@ export async function GET() {
       }
       acc[demerit.studentId].totalPoints += demerit.points;
       return acc;
-    }, {} as Record<string, { student: any; totalPoints: number }>);
+    }, {} as Record<string, { student: Student; totalPoints: number }>); // student 타입을 Student로 명시
 
     const monthlyDemerits = Object.values(demeritSummary).sort((a, b) => b.totalPoints - a.totalPoints);
 
