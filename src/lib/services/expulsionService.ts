@@ -33,7 +33,7 @@ export async function handleExpulsionLogic(studentId: string) {
 
   if (!studentWithDemerits) return;
 
-  const totalPoints = studentWithDemerits.demerits.reduce((sum, d) => sum + d.points, 0);
+  const totalPoints = studentWithDemerits.demerits.reduce((sum: number, d: Demerit) => sum + d.points, 0);
 
   // 2. 벌점이 5점 미만이면 퇴출 로직을 실행하지 않음
   if (totalPoints < 5) {
