@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Demerit, Warning, Expulsion } from '@prisma/client'; // Ensure these are imported if used in types
 
 const prisma = new PrismaClient();
 
@@ -30,7 +29,11 @@ async function getStudentDetails(studentId: string) {
 //   searchParams?: { [key: string]: string | string[] | undefined };
 // }
 
-export default async function StudentDetailPage({ params }: { params: { id: string } }) { // props를 인라인으로 정의
+interface PageProps {
+  params: { id: string };
+}
+
+export default async function StudentDetailPage({ params }: PageProps) { // props를 인라인으로 정의
   const student = await getStudentDetails(params.id);
 
   if (!student) {
