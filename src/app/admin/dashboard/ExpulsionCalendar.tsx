@@ -27,7 +27,7 @@ interface ExpulsionEvent {
   start: Date;
   end: Date;
   allDay: boolean;
-  resource: any;
+  resource: Expulsion & { student: Student }; // 'any' 대신 명확한 타입 지정
 }
 
 interface ExpulsionCalendarProps {

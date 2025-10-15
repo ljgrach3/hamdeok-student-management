@@ -1,4 +1,4 @@
-import { PrismaClient, Student, Demerit, Warning, Expulsion } from '@prisma/client';
+import { PrismaClient, Expulsion } from '@prisma/client'; // Student, Demerit, Warning 제거
 import { notFound } from 'next/navigation';
 import StudentCalendar from './StudentCalendar'; // 학생 달력 컴포넌트 import
 
