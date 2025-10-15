@@ -1,12 +1,12 @@
 'use client';
 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import isSameDay from 'date-fns/isSameDay';
-import ko from 'date-fns/locale/ko';
+import { format } from 'date-fns/format';
+import { parse } from 'date-fns/parse';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { getDay } from 'date-fns/getDay';
+import { isSameDay } from 'date-fns/isSameDay';
+import { ko } from 'date-fns/locale/ko';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Expulsion, Demerit } from '@prisma/client'; // 필요한 타입만 남김
 // import EventModal from './EventModal'; // 이 줄을 제거합니다.
