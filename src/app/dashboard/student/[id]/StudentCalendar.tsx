@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, dateFnsLocalizer, SlotInfo } from 'react-big-calendar'; // SlotInfo 제거
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
@@ -10,7 +10,7 @@ import isSameDay from 'date-fns/isSameDay';
 import ko from 'date-fns/locale/ko';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Demerit, Expulsion } from '@prisma/client';
-import EventModal from './EventModal'; // 모달 컴포넌트 import
+// import EventModal from './EventModal'; // 이 줄을 제거합니다.
 
 const locales = { 'ko': ko };
 const localizer = dateFnsLocalizer({
@@ -35,9 +35,9 @@ interface StudentCalendarProps {
 }
 
 export default function StudentCalendar({ demerits, expulsions }: StudentCalendarProps) {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [demeritsForDate, setDemeritsForDate] = useState<Demerit[]>([]);
+  // const [isModalOpen, setModalOpen] = useState(false);
+  // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  // const [demeritsForDate, setDemeritsForDate] = useState<Demerit[]>([]);
 
   // 퇴출 기록만 이벤트로 변환
   const expulsionEvents: CalendarEvent[] = expulsions.map(expulsion => ({
@@ -48,17 +48,17 @@ export default function StudentCalendar({ demerits, expulsions }: StudentCalenda
     resource: { type: 'expulsion' },
   }));
 
-  // 날짜 클릭 핸들러
-  const handleSelectSlot = (slotInfo: any) => { // SlotInfo 대신 any 사용 (임시)
-    const clickedDate = slotInfo.start;
-    const demeritsOnDate = demerits.filter(d => isSameDay(new Date(d.date), clickedDate));
+  // 날짜 클릭 핸들러 (제거)
+  // const handleSelectSlot = (slotInfo: any) => {
+  //   const clickedDate = slotInfo.start;
+  //   const demeritsOnDate = demerits.filter(d => isSameDay(new Date(d.date), clickedDate));
     
-    if (demeritsOnDate.length > 0) {
-      setSelectedDate(clickedDate);
-      setDemeritsForDate(demeritsOnDate);
-      setModalOpen(true);
-    }
-  };
+  //   if (demeritsOnDate.length > 0) {
+  //     setSelectedDate(clickedDate);
+  //     setDemeritsForDate(demeritsOnDate);
+  //     setModalOpen(true);
+  //   }
+  // };
 
   // 날짜 셀에 벌점 점(dot) 표시
   const CustomDateCellWrapper = ({ children, value }: { children: React.ReactNode, value: Date }) => {
@@ -73,12 +73,13 @@ export default function StudentCalendar({ demerits, expulsions }: StudentCalenda
 
   return (
     <>
-      <EventModal 
+      {/* EventModal 컴포넌트 렌더링 부분도 제거합니다. */}
+      {/* <EventModal 
         isOpen={isModalOpen} 
         onClose={() => setModalOpen(false)} 
         demerits={demeritsForDate}
         date={selectedDate}
-      />
+      /> */}
       <div className="h-[600px] bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
         <Calendar
           localizer={localizer}
@@ -87,8 +88,8 @@ export default function StudentCalendar({ demerits, expulsions }: StudentCalenda
           endAccessor="end"
           style={{ height: '100%' }}
           culture='ko'
-          selectable // 날짜 슬롯 선택 가능하도록 설정
-          onSelectSlot={handleSelectSlot}
+          // selectable // 날짜 슬롯 선택 가능하도록 설정 (제거)
+          // onSelectSlot={handleSelectSlot} (제거)
           components={{ 
             toolbar: () => null,
             dateCellWrapper: CustomDateCellWrapper // 커스텀 날짜 셀 래퍼 적용
