@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -9,7 +8,7 @@ import getDay from 'date-fns/getDay';
 import isSameDay from 'date-fns/isSameDay';
 import ko from 'date-fns/locale/ko';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Demerit, Expulsion } from '@prisma/client';
+import { Expulsion, Demerit } from '@prisma/client'; // 필요한 타입만 남김
 // import EventModal from './EventModal'; // 이 줄을 제거합니다.
 
 const locales = { 'ko': ko };
@@ -35,9 +34,7 @@ interface StudentCalendarProps {
 }
 
 export default function StudentCalendar({ demerits, expulsions }: StudentCalendarProps) {
-  // const [isModalOpen, setModalOpen] = useState(false);
-  // const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  // const [demeritsForDate, setDemeritsForDate] = useState<Demerit[]>([]);
+
 
   // 퇴출 기록만 이벤트로 변환
   const expulsionEvents: CalendarEvent[] = expulsions.map(expulsion => ({
