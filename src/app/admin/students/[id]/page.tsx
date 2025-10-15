@@ -29,7 +29,13 @@ async function getStudentDetails(studentId: string) {
 //   searchParams?: { [key: string]: string | string[] | undefined };
 // }
 
-export default async function StudentDetailPage({ params }: { params: { id: string } }) { // props를 인라인으로 정의
+export default async function StudentDetailPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) { // props를 인라인으로 정의
   const student = await getStudentDetails(params.id);
 
   if (!student) {
