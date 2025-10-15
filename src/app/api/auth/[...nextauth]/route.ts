@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-export const authOptions = { // authOptions 객체를 export 합니다.
+const authOptions = { // authOptions 객체를 export 합니다.
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
