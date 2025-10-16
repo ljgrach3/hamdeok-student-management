@@ -10,7 +10,7 @@ async function getDashboardData() {
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     const demeritsThisMonth = await prisma.demerit.findMany({
-      where: { date: { gte: startOfMonth, lte: endOfMonth } },
+      where: { issuedAt: { gte: startOfMonth, lte: endOfMonth } },
       include: { student: true },
     });
 
@@ -21,7 +21,7 @@ async function getDashboardData() {
           totalPoints: 0,
         };
       }
-      acc[demerit.studentId].totalPoints += demerit.points;
+      acc[demerit.studentId].totalPoints += demerit.score;
       return acc;
     }, {} as Record<string, { student: Student; totalPoints: number }>);
 
