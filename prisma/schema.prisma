@@ -6,61 +6,126 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // sqlite -> postgresql
-  url      = env("DATABASE_URL") // file:./dev.db -> env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
-// 학생 모델
-model Student {
-  id        String   @id @default(cuid())
-  grade     Int // 학년
-  classNum  Int // 반
-  name      String // 이름
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  demerits   Demerit[]
-  warnings   Warning[]
-  expulsions Expulsion[]
-
-  @@unique([grade, classNum, name], name: "unique_student")
-}
-
-// next-auth User 모델로 사용될 Admin 모델 (이름을 User로 변경)
 model User {
   id            String    @id @default(cuid())
-  username      String    @unique
-  password      String // 암호화된 비밀번호 저장
-  email         String?   @unique // next-auth User 모델에 필요 (선택 사항이지만 추가)
-  emailVerified DateTime? // next-auth User 모델에 필요
+  name          String
+  username      String    @unique // Added for admin login
+  email         String    @unique
+  password      String
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  Student       Student[] // Changed to array as a User can be linked to multiple Students if needed, or one-to-one if Student has unique userId
+  Demerit       Demerit[]
+  Warning       Warning[]
+  Expulsion     Expulsion[]
+  Session       Session[]
+  Account       Account[]
+}
+
+model Student {
+  id            String    @id @default(cuid())
+  studentId     String    @unique
+  name          String
+  grade         Int
+  classNum      Int
+  studentNum    Int
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  Demerit       Demerit[]
+  Warning       Warning[]
+  Expulsion     Expulsion[]
+  Attendance    Attendance[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
+  @@unique([grade, classNum, studentNum], name: "unique_student_identifier") // Corrected unique constraint
 }
 
-// next-auth Account 모델
+model Demerit {
+  id            String    @id @default(cuid())
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  reason        String
+  score         Int
+  issuedAt      DateTime  @default(now())
+  issuedBy      String
+  user          User      @relation(fields: [issuedBy], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Warning {
+  id            String    @id @default(cuid())
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  reason        String
+  issuedAt      DateTime  @default(now())
+  issuedBy      String
+  user          User      @relation(fields: [issuedBy], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Expulsion {
+  id            String    @id @default(cuid())
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  reason        String
+  startDate     DateTime
+  endDate       DateTime
+  issuedBy      String
+  user          User      @relation(fields: [issuedBy], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Attendance {
+  id            String    @id @default(cuid())
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id])
+  date          DateTime
+  status        AttendanceStatus
+  reason        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EARLY_LEAVE
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
-  session_state     String?
+  id_token          String? @db.Text
 
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-// next-auth Session 모델
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -69,47 +134,10 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// next-auth VerificationToken 모델
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-
-// 벌점 기록 모델
-model Demerit {
-  id        String   @id @default(cuid())
-  points    Int // 벌점 수치
-  reason    String // 벌점 사유
-  assigner  String // 벌점 부여자 (관리자 이름)
-  date      DateTime @default(now()) // 벌점 부여 일시
-  
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-}
-
-// 경고 기록 모델
-model Warning {
-  id        String   @id @default(cuid())
-  reason    String // 경고 사유
-  date      DateTime @default(now()) // 경고 부여 일시
-
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-}
-
-// 퇴출 기록 모델
-model Expulsion {
-  id        String   @id @default(cuid())
-  startDate DateTime // 퇴출 시작일
-  endDate   DateTime // 퇴출 종료일
-  totalDays Int // 총 퇴출일
-  status    String // 상태: PENDING (예정), ACTIVE (진행중), COMPLETED (완료)
-  
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
 }
